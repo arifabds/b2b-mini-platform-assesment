@@ -1,7 +1,9 @@
+import { productCategories } from '../features/products/ProductForm'; 
+
 export interface Product {
     id: number;
     name: string;
-    category: string;
+    category: typeof productCategories[number]; 
     price: number;
     stock: number;
     createdAt: string;
