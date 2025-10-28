@@ -5,7 +5,7 @@ import type { SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../lib/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { KeyRound, LoaderCircle } from 'lucide-react';
+import { KeyRound, LoaderCircle, Eye, EyeOff } from 'lucide-react';
 
 // Form validation schema using Zod for email and password validation
 const loginSchema = z.object({
@@ -19,6 +19,7 @@ export default function LoginPage() {
     const navigate = useNavigate();
     const { login } = useAuth();
     const [apiError, setApiError] = useState<string | null>(null);
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     const {
         register,
@@ -37,16 +38,12 @@ export default function LoginPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
             });
-
             const result = await response.json();
-
             if (!response.ok) {
                 throw new Error(result.message || 'Login failed. Please try again.');
             }
-
             login(result.user, result.token);
             navigate('/dashboard', { replace: true });
-
         } catch (error) {
             setApiError((error as Error).message);
         }
@@ -86,14 +83,28 @@ export default function LoginPage() {
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Password
                             </label>
-                            <input
-                                type="password"
-                                id="password"
-                                {...register('password')}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-offset-gray-800 transition-all duration-200"
-                                placeholder="••••••••"
-                                disabled={isSubmitting}
-                            />
+                            <div className="relative">
+                                <input
+                                    type={isPasswordVisible ? 'text' : 'password'}
+                                    id="password"
+                                    {...register('password')}
+                                    className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-offset-gray-800 transition-all duration-200"
+                                    placeholder="••••••••"
+                                    disabled={isSubmitting}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setIsPasswordVisible(prev => !prev)}
+                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 rounded-full"
+                                    aria-label="Toggle password visibility"
+                                >
+                                    {isPasswordVisible ? (
+                                        <EyeOff className="h-5 w-5" />
+                                    ) : (
+                                        <Eye className="h-5 w-5" />
+                                    )}
+                                </button>
+                            </div>
                             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
                         </div>
                     </div>
