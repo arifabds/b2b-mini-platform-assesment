@@ -10,7 +10,8 @@ export const productCategories = ['Rings', 'Necklaces', 'Earrings', 'Bracelets']
 
 interface ProductFormProps {
     productToEdit?: Product | null;
-    onSubmitSuccess: () => void;
+    onSubmitSuccess: (mode: 'created' | 'edited') => void;
+    onSubmitError: (message: string) => void;
     onCancel: () => void;
 }
 
@@ -26,7 +27,7 @@ const productSchema = z.object({
 
 type ProductFormFields = z.infer<typeof productSchema>;
 
-export default function ProductForm({ productToEdit, onSubmitSuccess, onCancel }: ProductFormProps) {
+export default function ProductForm({  productToEdit, onSubmitSuccess, onSubmitError, onCancel }: ProductFormProps) {
     const [apiError, setApiError] = useState<string | null>(null);
     const isEditMode = !!productToEdit;
 
@@ -59,9 +60,11 @@ export default function ProductForm({ productToEdit, onSubmitSuccess, onCancel }
                 const errorResult = await response.json();
                 throw new Error(errorResult.message || `Failed to ${isEditMode ? 'update' : 'create'} product.`);
             }
-            onSubmitSuccess();
+            onSubmitSuccess(isEditMode ? 'edited' : 'created');
         } catch (error) {
-            setApiError((error as Error).message);
+            const errorMessage = (error as Error).message;
+            setApiError(errorMessage);
+            onSubmitError(errorMessage);
         }
     };
 

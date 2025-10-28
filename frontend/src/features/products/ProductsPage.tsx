@@ -2,8 +2,16 @@ import { useState, useEffect } from 'react';
 import type { Product } from '../../types';
 import ProductForm from './ProductForm';
 import { LoaderCircle, AlertTriangle, Plus, Search, Edit } from 'lucide-react';
+import Toast from '../../components/common/Toast';
+import type { ToastType } from '../../components/common/Toast';
+
 
 const productCategories = ['All', 'Rings', 'Necklaces', 'Earrings', 'Bracelets'];
+
+interface ToastState {
+    message: string;
+    type: ToastType;
+}
 
 export default function ProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
@@ -16,6 +24,7 @@ export default function ProductsPage() {
 
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [productToEdit, setProductToEdit] = useState<Product | null>(null);
+    const [toast, setToast] = useState<ToastState | null>(null);
 
     // Debounce search input to avoid excessive API calls
     useEffect(() => {
@@ -63,11 +72,18 @@ export default function ProductsPage() {
     };
 
 
-
-    const handleFormSuccess = () => {
+    const handleFormSuccess = (mode: 'created' | 'edited') => {
         setIsFormOpen(false);
         setProductToEdit(null);
         fetchProducts();
+        setToast({
+            message: `Product successfully ${mode}!`,
+            type: 'success'
+        });
+    };
+
+    const handleFormError = (message: string) => {
+        setToast({ message, type: 'error' });
     };
 
     if (error) {
@@ -85,109 +101,121 @@ export default function ProductsPage() {
     }
 
     return (
-        <div className="space-y-6 md:space-y-8">
-            <div className="animate-fade-in-down">
-                <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center pb-2">
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">Products</h1>
-                    <button
-                        onClick={handleAddNewProduct}
-                        className="w-full md:w-auto inline-flex items-center justify-center gap-2 bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-900 transition-colors"
-                    >
-                        <Plus size={18} />
-                        <span>Add New Product</span>
-                    </button>
-                </div>
+        <>
 
-                {/* Search and filter controls */}
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-transparent dark:border-gray-700 flex flex-col md:flex-row gap-4">
-                    <div className="relative flex-grow">
-                        <label htmlFor="search" className="sr-only">Search Products</label>
-                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                            <Search className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                            type="text"
-                            id="search"
-                            placeholder="Search by product name..."
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-offset-gray-800 transition-all duration-200"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                    <select
-                        id="category"
-                        aria-label="Filter by Category"
-                        className="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-offset-gray-800 transition-all duration-200"
-                        value={selectedCategory}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
-                    >
-                        {productCategories.map(category => (
-                            <option key={category} value={category}>{category}</option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-transparent dark:border-gray-700 overflow-hidden animate-fade-in-up">
-                <div className="overflow-x-auto">
-                    {/* Products table with edit actions */}
-                    {loading ? (
-                        <div className="flex items-center justify-center h-64">
-                            <LoaderCircle className="h-10 w-10 animate-spin text-indigo-500" />
-                        </div>
-                    ) : (
-                        <table className="w-full text-left">
-                            <thead className="bg-gray-50 dark:bg-gray-900">
-                                <tr>
-                                    <th className="p-4 font-semibold text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wider">Product</th>
-                                    <th className="p-4 font-semibold text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wider">Category</th>
-                                    <th className="p-4 font-semibold text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wider text-right">Price</th>
-                                    <th className="p-4 font-semibold text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wider text-center">Stock</th>
-                                    <th className="p-4 font-semibold text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wider text-center">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                                {products.length > 0 ? (
-                                    products.map((product) => (
-                                        <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                                            <td className="p-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 font-medium">{product.name}</td>
-                                            <td className="p-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{product.category}</td>
-                                            <td className="p-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-right">
-                                                {new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(product.price)}
-                                            </td>
-                                            <td className="p-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{product.stock}</td>
-                                            <td className="p-4 whitespace-nowrap text-sm text-center">
-                                                <button
-                                                    onClick={() => handleEditProduct(product)}
-                                                    className="p-2 rounded-full text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors"
-                                                    title={`Edit ${product.name}`}
-                                                >
-                                                    <Edit size={18} />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan={5} className="text-center p-8 text-gray-500 dark:text-gray-400">
-                                            No products found matching your criteria.
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    )}
-                </div>
-            </div>
-
-
-            {isFormOpen && (
-                <ProductForm
-                    productToEdit={productToEdit}
-                    onSubmitSuccess={handleFormSuccess}
-                    onCancel={handleFormCancel}
+            {/* Toast Bildirim Alanı */}
+            {toast && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
                 />
             )}
-        </div>
+            <div className="space-y-6 md:space-y-8">
+                <div className="animate-fade-in-down">
+                    <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center pb-2">
+                        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">Products</h1>
+                        <button
+                            onClick={handleAddNewProduct}
+                            className="w-full md:w-auto inline-flex items-center justify-center gap-2 bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-900 transition-colors"
+                        >
+                            <Plus size={18} />
+                            <span>Add New Product</span>
+                        </button>
+                    </div>
+
+                    {/* Search and filter controls */}
+                    <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-transparent dark:border-gray-700 flex flex-col md:flex-row gap-4">
+                        <div className="relative flex-grow">
+                            <label htmlFor="search" className="sr-only">Search Products</label>
+                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <Search className="h-5 w-5 text-gray-400" />
+                            </div>
+                            <input
+                                type="text"
+                                id="search"
+                                placeholder="Search by product name..."
+                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-offset-gray-800 transition-all duration-200"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <select
+                            id="category"
+                            aria-label="Filter by Category"
+                            className="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-offset-gray-800 transition-all duration-200"
+                            value={selectedCategory}
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                        >
+                            {productCategories.map(category => (
+                                <option key={category} value={category}>{category}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-transparent dark:border-gray-700 overflow-hidden animate-fade-in-up">
+                    <div className="overflow-x-auto">
+                        {/* Products table with edit actions */}
+                        {loading ? (
+                            <div className="flex items-center justify-center h-64">
+                                <LoaderCircle className="h-10 w-10 animate-spin text-indigo-500" />
+                            </div>
+                        ) : (
+                            <table className="w-full text-left">
+                                <thead className="bg-gray-50 dark:bg-gray-900">
+                                    <tr>
+                                        <th className="p-4 font-semibold text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wider">Product</th>
+                                        <th className="p-4 font-semibold text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wider">Category</th>
+                                        <th className="p-4 font-semibold text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wider text-right">Price</th>
+                                        <th className="p-4 font-semibold text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wider text-center">Stock</th>
+                                        <th className="p-4 font-semibold text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wider text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                    {products.length > 0 ? (
+                                        products.map((product) => (
+                                            <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                                <td className="p-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 font-medium">{product.name}</td>
+                                                <td className="p-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{product.category}</td>
+                                                <td className="p-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-right">
+                                                    {new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(product.price)}
+                                                </td>
+                                                <td className="p-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">{product.stock}</td>
+                                                <td className="p-4 whitespace-nowrap text-sm text-center">
+                                                    <button
+                                                        onClick={() => handleEditProduct(product)}
+                                                        className="p-2 rounded-full text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors"
+                                                        title={`Edit ${product.name}`}
+                                                    >
+                                                        <Edit size={18} />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={5} className="text-center p-8 text-gray-500 dark:text-gray-400">
+                                                No products found matching your criteria.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+                </div>
+
+
+                {isFormOpen && (
+                    <ProductForm
+                        productToEdit={productToEdit}
+                        onSubmitSuccess={handleFormSuccess}
+                        onSubmitError={handleFormError}
+                        onCancel={handleFormCancel}
+                    />
+                )}
+            </div>
+        </>
     );
 }
