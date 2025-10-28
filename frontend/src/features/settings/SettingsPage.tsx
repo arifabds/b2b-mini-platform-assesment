@@ -6,9 +6,12 @@ export default function SettingsPage() {
 
     return (
         <div className="space-y-6 md:space-y-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">Settings</h1>
+            <div className="animate-fade-in-down">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">Settings</h1>
+            </div>
 
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-transparent dark:border-gray-700">
+
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-transparent dark:border-gray-700 animate-fade-in-up">
                 <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">Appearance</h2>
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

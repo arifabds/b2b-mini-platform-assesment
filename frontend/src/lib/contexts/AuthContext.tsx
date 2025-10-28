@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from 'react';
-import type { ReactNode } from 'react';
+import type {ReactNode } from 'react';
+
 import type { User } from '../../types';
 
 interface AuthContextType {
@@ -12,27 +13,39 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-//Wrapper-Provider
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
-    const [token, setToken] = useState<string | null>(null);
+    const [user, setUser] = useState<User | null>(() => {
+        const storedUser = localStorage.getItem('authUser');
+        try {
+            return storedUser ? JSON.parse(storedUser) : null;
+        } catch (error) {
+            console.error("Failed to parse user from localStorage", error);
+            return null;
+        }
+    });
+
+    const [token, setToken] = useState<string | null>(() => {
+        return localStorage.getItem('authToken');
+    });
 
     const login = (userData: User, userToken: string) => {
         setUser(userData);
         setToken(userToken);
-        // TODO: Save token to localstorage
+        localStorage.setItem('authUser', JSON.stringify(userData));
+        localStorage.setItem('authToken', userToken);
     };
 
     const logout = () => {
         setUser(null);
         setToken(null);
-        // TODO: Delete token from localstorage
+        localStorage.removeItem('authUser');
+        localStorage.removeItem('authToken');
     };
 
     const value = {
         user,
         token,
-        isAuthenticated: !!user,
+        isAuthenticated: !!user && !!token,
         login,
         logout,
     };
@@ -40,7 +53,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-//Custom useAuth hook
 export function useAuth() {
     const context = useContext(AuthContext);
     if (context === undefined) {

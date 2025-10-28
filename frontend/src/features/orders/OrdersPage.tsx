@@ -50,11 +50,11 @@ export default function OrdersPage() {
 
     return (
         <div className="space-y-6 md:space-y-8">
-            <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
+            <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center animate-fade-in-down">
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">Orders</h1>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-transparent dark:border-gray-700 overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-transparent dark:border-gray-700 overflow-hidden animate-fade-in-up">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead className="bg-gray-50 dark:bg-gray-900">

@@ -54,44 +54,48 @@ export default function OrderDetailPage() {
 
     return (
         <div className="space-y-6 md:space-y-8">
-            <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100 truncate">
-                    Order: <span className="text-indigo-600 dark:text-indigo-400">{order.id}</span>
-                </h1>
-                <Link to="/orders" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-900 transition-colors self-start">
-                    <ArrowLeft size={16} />
-                    Back to Orders
-                </Link>
-            </div>
+            <div className="animate-fade-in-down">
 
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-transparent dark:border-gray-700">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div>
-                        <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</h3>
-                        <p className="text-lg font-medium text-gray-800 dark:text-gray-200 mt-1">{order.customerName}</p>
-                    </div>
-                    <div>
-                        <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Order Date</h3>
-                        <p className="text-lg font-medium text-gray-800 dark:text-gray-200 mt-1">{new Date(order.orderDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-                    </div>
-                    <div>
-                        <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</h3>
-                        <p className="text-lg font-medium text-gray-800 dark:text-gray-200 mt-1">
-                            <span className={`px-3 py-1 rounded-full text-sm font-semibold capitalize ${{
+                <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100 truncate">
+                        Order: <span className="text-indigo-600 dark:text-indigo-400">{order.id}</span>
+                    </h1>
+                    <Link to="/orders" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-900 transition-colors self-start">
+                        <ArrowLeft size={16} />
+                        Back to Orders
+                    </Link>
+                </div>
+
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-transparent dark:border-gray-700">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div>
+                            <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</h3>
+                            <p className="text-lg font-medium text-gray-800 dark:text-gray-200 mt-1">{order.customerName}</p>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Order Date</h3>
+                            <p className="text-lg font-medium text-gray-800 dark:text-gray-200 mt-1">{new Date(order.orderDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</h3>
+                            <p className="text-lg font-medium text-gray-800 dark:text-gray-200 mt-1">
+                                <span className={`px-3 py-1 rounded-full text-sm font-semibold capitalize ${{
                                     Delivered: 'bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-300',
                                     Shipped: 'bg-blue-100 dark:bg-blue-500/20 text-blue-800 dark:text-blue-300',
                                     Pending: 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-300',
                                     Cancelled: 'bg-red-100 dark:bg-red-500/20 text-red-800 dark:text-red-300',
                                 }[order.status]
-                                }`}>
-                                {order.status}
-                            </span>
-                        </p>
+                                    }`}>
+                                    {order.status}
+                                </span>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div>
+
+            <div className='animate-fade-in-up'>
                 <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Items</h2>
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-transparent dark:border-gray-700 overflow-hidden">
                     <div className="overflow-x-auto">

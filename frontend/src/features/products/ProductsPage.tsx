@@ -84,46 +84,48 @@ export default function ProductsPage() {
 
     return (
         <div className="space-y-6 md:space-y-8">
-            <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">Products</h1>
-                <button
-                    onClick={handleAddNewProduct}
-                    className="w-full md:w-auto inline-flex items-center justify-center gap-2 bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-900 transition-colors"
-                >
-                    <Plus size={18} />
-                    <span>Add New Product</span>
-                </button>
-            </div>
-
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-transparent dark:border-gray-700 flex flex-col md:flex-row gap-4">
-                <div className="relative flex-grow">
-                    <label htmlFor="search" className="sr-only">Search Products</label>
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                        <Search className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                        type="text"
-                        id="search"
-                        placeholder="Search by product name..."
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-offset-gray-800 transition-all duration-200"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+            <div className="animate-fade-in-down">
+                <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">Products</h1>
+                    <button
+                        onClick={handleAddNewProduct}
+                        className="w-full md:w-auto inline-flex items-center justify-center gap-2 bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-900 transition-colors"
+                    >
+                        <Plus size={18} />
+                        <span>Add New Product</span>
+                    </button>
                 </div>
-                <select
-                    id="category"
-                    aria-label="Filter by Category"
-                    className="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-offset-gray-800 transition-all duration-200"
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                >
-                    {productCategories.map(category => (
-                        <option key={category} value={category}>{category}</option>
-                    ))}
-                </select>
+
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-transparent dark:border-gray-700 flex flex-col md:flex-row gap-4">
+                    <div className="relative flex-grow">
+                        <label htmlFor="search" className="sr-only">Search Products</label>
+                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <Search className="h-5 w-5 text-gray-400" />
+                        </div>
+                        <input
+                            type="text"
+                            id="search"
+                            placeholder="Search by product name..."
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-offset-gray-800 transition-all duration-200"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <select
+                        id="category"
+                        aria-label="Filter by Category"
+                        className="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-offset-gray-800 transition-all duration-200"
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                    >
+                        {productCategories.map(category => (
+                            <option key={category} value={category}>{category}</option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-transparent dark:border-gray-700 overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-transparent dark:border-gray-700 overflow-hidden animate-fade-in-up">
                 <div className="overflow-x-auto">
                     {loading ? (
                         <div className="flex items-center justify-center h-64">
@@ -173,6 +175,7 @@ export default function ProductsPage() {
                     )}
                 </div>
             </div>
+
 
             {isFormOpen && (
                 <ProductForm

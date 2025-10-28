@@ -62,7 +62,7 @@ export default function ProductForm({ productToEdit, onSubmitSuccess, onCancel }
 
     return (
         <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-md border border-transparent dark:border-gray-700 relative">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-md border border-transparent dark:border-gray-700 relative animate-fade-in-up">
                 <div className="flex justify-between items-start mb-4">
                     <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{isEditMode ? 'Edit Product' : 'Create New Product'}</h2>
                     <button onClick={onCancel} className="p-1 rounded-full text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 transition-colors">
