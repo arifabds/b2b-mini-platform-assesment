@@ -1,9 +1,10 @@
-import { http, HttpResponse } from 'msw'
+import { http, HttpResponse, delay } from 'msw'
 import { products, orders } from '../../mocks/db'
 
 export const dashboardHandlers = [
     // Intercepts GET requests to /api/summary to provide dashboard data.
-    http.get('/api/summary', () => {
+    http.get('/api/summary',  async () => {
+        await delay(300); // Got these fetches a bit lazy to show loading screens
 
         const totalProducts = products.length;
         const totalOrders = orders.length;

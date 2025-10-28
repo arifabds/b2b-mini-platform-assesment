@@ -6,11 +6,19 @@ import OrdersPage from '../features/orders/OrdersPage';
 import SettingsPage from '../features/settings/SettingsPage';
 import PrivateRoute from './PrivateRoute';
 import OrderDetailPage from '../features/orders/OrderDetailPage';
+import NotFoundPage from '../components/common/NotFoundPage';
+//import CrashTest from '../components/CrashTest'; //To test crashes
+import ErrorBoundary from '../components/common/ErrorBoundary';
 
 export const router = createBrowserRouter([
     {
         path: '/',
-        element: <PrivateRoute />,
+        element: (
+            <ErrorBoundary>
+                <PrivateRoute />
+            </ErrorBoundary>
+        ),
+        errorElement: <ErrorBoundary />,
         children: [
             //Auto navigate to dashboard
             { index: true, element: <Navigate to="/dashboard" replace /> },
@@ -19,10 +27,15 @@ export const router = createBrowserRouter([
             { path: 'orders', element: <OrdersPage /> },
             { path: 'orders/:id', element: <OrderDetailPage /> },
             { path: 'settings', element: <SettingsPage /> },
+            //{ path: 'crash', element: <CrashTest /> },
         ],
     },
     {
         path: '/login', //Independent login path 
         element: <LoginPage />,
+    },
+    {
+        path: '*',
+        element: <NotFoundPage />,
     },
 ]);

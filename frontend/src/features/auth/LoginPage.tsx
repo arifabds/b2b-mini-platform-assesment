@@ -5,7 +5,7 @@ import type { SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../lib/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { KeyRound, LoaderCircle, Eye, EyeOff } from 'lucide-react';
+import { Home, LoaderCircle, Eye, EyeOff } from 'lucide-react';
 
 // Form validation schema using Zod for email and password validation
 const loginSchema = z.object({
@@ -55,7 +55,7 @@ export default function LoginPage() {
             <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-sm border border-transparent dark:border-gray-700">
                 <div className="flex flex-col items-center mb-6">
                     <div className="bg-indigo-100 dark:bg-indigo-500/20 p-3 rounded-full mb-4">
-                        <KeyRound className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+                        <Home className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
                     </div>
                     <h1 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-100">
                         B2B Platform Login

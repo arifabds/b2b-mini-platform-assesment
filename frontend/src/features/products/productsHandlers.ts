@@ -1,10 +1,11 @@
-import { http, HttpResponse } from 'msw'
+import { http, HttpResponse, delay } from 'msw'
 import { products } from '../../mocks/db'
 import type { Product } from '../../types';
 
 export const productsHandlers = [
     // Intercepts GET /api/products to list and filter products.
-    http.get('/api/products', ({ request }) => {
+    http.get('/api/products', async ({ request }) => {
+        await delay(300);
         const url = new URL(request.url);
         const query = url.searchParams.get('q')?.toLowerCase();
         const category = url.searchParams.get('category');
