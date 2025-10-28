@@ -5,6 +5,7 @@ import ProductsPage from '../features/products/ProductsPage';
 import OrdersPage from '../features/orders/OrdersPage';
 import SettingsPage from '../features/settings/SettingsPage';
 import PrivateRoute from './PrivateRoute';
+import OrderDetailPage from '../features/orders/OrderDetailPage';
 
 export const router = createBrowserRouter([
     {
@@ -16,6 +17,7 @@ export const router = createBrowserRouter([
             { path: 'dashboard', element: <DashboardPage /> },
             { path: 'products', element: <ProductsPage /> },
             { path: 'orders', element: <OrdersPage /> },
+            { path: 'orders/:id', element: <OrderDetailPage /> },
             { path: 'settings', element: <SettingsPage /> },
         ],
     },
