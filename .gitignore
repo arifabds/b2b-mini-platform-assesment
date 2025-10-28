@@ -1,5 +1,7 @@
 Markdowns/
 
+generate_snapshot.py
+
 /node_modules
 
 /dist
