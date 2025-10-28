@@ -9,6 +9,7 @@ export default function Layout() {
         return localStorage.getItem('sidebarCollapsed') === 'true';
     });
 
+    // Persist sidebar collapsed state to localStorage
     useEffect(() => {
         localStorage.setItem('sidebarCollapsed', String(isSidebarCollapsed));
     }, [isSidebarCollapsed]);
@@ -30,11 +31,12 @@ export default function Layout() {
                 onToggleCollapse={toggleSidebarCollapsed}
             />
 
+            {/* Main content area with responsive sidebar spacing */}
             <div
                 className={`
           flex-1 flex flex-col overflow-hidden
           transition-all duration-300 ease-in-out
-          ${isSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'}
+          ${isSidebarCollapsed ? 'md:ml-24' : 'md:ml-28'}
         `}
             >
                 <Header

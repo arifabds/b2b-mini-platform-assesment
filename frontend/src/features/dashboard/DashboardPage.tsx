@@ -4,6 +4,7 @@ import type { Order } from '../../types';
 import { Package, ShoppingCart, LoaderCircle, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+// Interface defining dashboard summary data structure
 interface SummaryData {
     totalProducts: number;
     totalOrders: number;
@@ -16,6 +17,7 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Fetch dashboard data on component mount with error handling
     useEffect(() => {
         const fetchSummaryData = async () => {
             try {
@@ -57,6 +59,7 @@ export default function DashboardPage() {
         );
     }
 
+    // Main dashboard layout with summary cards and recent orders table
     return (
         <div className="space-y-6 md:space-y-8">
             <div className="animate-fade-in-down">
@@ -66,7 +69,7 @@ export default function DashboardPage() {
                 </h1>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-transparent dark:border-gray-700 transition-transform duration-300 hover:scale-105">
+                    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-transparent dark:border-gray-700 transition-transform duration-300 hover:scale-[1.02]">
                         <div className="flex items-start justify-between">
                             <div>
                                 <h2 className="text-base font-semibold text-gray-600 dark:text-gray-400">Total Products</h2>
@@ -77,7 +80,7 @@ export default function DashboardPage() {
                             </div>
                         </div>
                     </div>
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-transparent dark:border-gray-700 transition-transform duration-300 hover:scale-105">
+                    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-transparent dark:border-gray-700 transition-transform duration-300 hover:scale-[1.02]">
                         <div className="flex items-start justify-between">
                             <div>
                                 <h2 className="text-base font-semibold text-gray-600 dark:text-gray-400">Total Orders</h2>
@@ -94,6 +97,7 @@ export default function DashboardPage() {
             <div className="animate-fade-in-up">
                 <div>
                     <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Recent Orders</h2>
+                    {/* Responsive table with order data and status badges */}
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-transparent dark:border-gray-700 overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">

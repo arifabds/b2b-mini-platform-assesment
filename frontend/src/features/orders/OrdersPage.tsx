@@ -8,6 +8,7 @@ export default function OrdersPage() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Fetch all orders list with error handling
     useEffect(() => {
         const fetchOrders = async () => {
             try {
@@ -54,6 +55,7 @@ export default function OrdersPage() {
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">Orders</h1>
             </div>
 
+            {/* Orders table with status badges and navigation links */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-transparent dark:border-gray-700 overflow-hidden animate-fade-in-up">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">

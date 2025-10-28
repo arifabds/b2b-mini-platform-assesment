@@ -17,11 +17,13 @@ export default function ProductsPage() {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [productToEdit, setProductToEdit] = useState<Product | null>(null);
 
+    // Debounce search input to avoid excessive API calls
     useEffect(() => {
         const handler = setTimeout(() => { setDebouncedSearchTerm(searchTerm); }, 300);
         return () => clearTimeout(handler);
     }, [searchTerm]);
 
+    // Fetch products with search and category filtering
     const fetchProducts = async () => {
         setLoading(true);
         try {
@@ -85,7 +87,7 @@ export default function ProductsPage() {
     return (
         <div className="space-y-6 md:space-y-8">
             <div className="animate-fade-in-down">
-                <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
+                <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center pb-2">
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">Products</h1>
                     <button
                         onClick={handleAddNewProduct}
@@ -96,6 +98,7 @@ export default function ProductsPage() {
                     </button>
                 </div>
 
+                {/* Search and filter controls */}
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-transparent dark:border-gray-700 flex flex-col md:flex-row gap-4">
                     <div className="relative flex-grow">
                         <label htmlFor="search" className="sr-only">Search Products</label>
@@ -127,6 +130,7 @@ export default function ProductsPage() {
 
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-transparent dark:border-gray-700 overflow-hidden animate-fade-in-up">
                 <div className="overflow-x-auto">
+                    {/* Products table with edit actions */}
                     {loading ? (
                         <div className="flex items-center justify-center h-64">
                             <LoaderCircle className="h-10 w-10 animate-spin text-indigo-500" />

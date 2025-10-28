@@ -14,6 +14,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+    // Initialize auth state from localStorage with error handling
     const [user, setUser] = useState<User | null>(() => {
         const storedUser = localStorage.getItem('authUser');
         try {
@@ -28,6 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return localStorage.getItem('authToken');
     });
 
+    // Login function that persists user data to localStorage
     const login = (userData: User, userToken: string) => {
         setUser(userData);
         setToken(userToken);
@@ -35,6 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('authToken', userToken);
     };
 
+    // Logout function that clears all auth data
     const logout = () => {
         setUser(null);
         setToken(null);

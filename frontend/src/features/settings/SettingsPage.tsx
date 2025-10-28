@@ -4,6 +4,7 @@ import { Sun, Moon } from 'lucide-react';
 export default function SettingsPage() {
     const { theme, toggleTheme } = useTheme();
 
+    // Settings page with theme toggle functionality
     return (
         <div className="space-y-6 md:space-y-8">
             <div className="animate-fade-in-down">
@@ -14,6 +15,7 @@ export default function SettingsPage() {
             <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-transparent dark:border-gray-700 animate-fade-in-up">
                 <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">Appearance</h2>
 
+                {/* Theme toggle switch with animated icons */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
                         <p className="text-gray-600 dark:text-gray-400">

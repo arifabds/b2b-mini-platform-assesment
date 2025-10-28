@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { Product } from '../../types';
 import { useState } from 'react';
 import { LoaderCircle, X } from 'lucide-react';
+import ReactDOM from 'react-dom';
 
 export const productCategories = ['Rings', 'Necklaces', 'Earrings', 'Bracelets'] as const;
 
@@ -13,9 +14,12 @@ interface ProductFormProps {
     onCancel: () => void;
 }
 
+// Zod validation schema for product form fields
 const productSchema = z.object({
     name: z.string().min(1, 'Product name is required.'),
-    category: z.enum(productCategories),
+    category: z.enum(productCategories, {
+        message: "Please select a category."
+    }),
     price: z.coerce.number().min(0.01, 'Price must be greater than 0.'),
     stock: z.coerce.number().int('Stock must be a whole number.').nonnegative('Stock cannot be negative.'),
 });
@@ -40,6 +44,7 @@ export default function ProductForm({ productToEdit, onSubmitSuccess, onCancel }
         },
     });
 
+    // Handle form submission for both create and edit modes
     const onSubmit = async (data: ProductFormFields) => {
         setApiError(null);
         try {
@@ -60,7 +65,11 @@ export default function ProductForm({ productToEdit, onSubmitSuccess, onCancel }
         }
     };
 
-    return (
+    const modalRoot = document.getElementById('modal-root');
+    if (!modalRoot) return null;
+
+    // Modal form rendered via React portal
+    return ReactDOM.createPortal(
         <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4">
             <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-md border border-transparent dark:border-gray-700 relative animate-fade-in-up">
                 <div className="flex justify-between items-start mb-4">
@@ -69,7 +78,7 @@ export default function ProductForm({ productToEdit, onSubmitSuccess, onCancel }
                         <X size={24} />
                     </button>
                 </div>
-
+                
                 <form onSubmit={handleSubmit(onSubmit)} noValidate>
                     <div className="space-y-4">
                         <div>
@@ -119,6 +128,7 @@ export default function ProductForm({ productToEdit, onSubmitSuccess, onCancel }
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        modalRoot
     );
 }

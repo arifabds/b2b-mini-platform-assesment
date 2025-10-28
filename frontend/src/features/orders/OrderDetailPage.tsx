@@ -9,6 +9,7 @@ export default function OrderDetailPage() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Fetch individual order details by ID with error handling
     useEffect(() => {
         const fetchOrderDetail = async () => {
             try {
@@ -52,11 +53,12 @@ export default function OrderDetailPage() {
 
     if (!order) return null;
 
+    // Order detail layout with customer info and items table
     return (
         <div className="space-y-6 md:space-y-8">
             <div className="animate-fade-in-down">
 
-                <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
+                <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center pb-2">
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100 truncate">
                         Order: <span className="text-indigo-600 dark:text-indigo-400">{order.id}</span>
                     </h1>
@@ -97,6 +99,7 @@ export default function OrderDetailPage() {
 
             <div className='animate-fade-in-up'>
                 <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Items</h2>
+                {/* Order items table with pricing calculations */}
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-transparent dark:border-gray-700 overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">

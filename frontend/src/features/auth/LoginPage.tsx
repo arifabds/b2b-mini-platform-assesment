@@ -7,9 +7,10 @@ import { useAuth } from '../../lib/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { KeyRound, LoaderCircle } from 'lucide-react';
 
+// Form validation schema using Zod for email and password validation
 const loginSchema = z.object({
-    email: z.string().email({ message: 'Please enter a valid email address.' }),
-    password: z.string().min(1, { message: 'Password cannot be empty.' }),
+    email: z.string().email('Please enter a valid email address.'),
+    password: z.string().min(1, 'Password cannot be empty.'),
 });
 
 type LoginFormFields = z.infer<typeof loginSchema>;
@@ -27,6 +28,7 @@ export default function LoginPage() {
         resolver: zodResolver(loginSchema),
     });
 
+    // Handle form submission with API call and error handling
     const onSubmit: SubmitHandler<LoginFormFields> = async (data) => {
         setApiError(null);
         try {
@@ -50,6 +52,7 @@ export default function LoginPage() {
         }
     };
 
+    // Responsive login form with dark mode support and form validation
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col items-center justify-center p-4 transition-colors duration-300 animate-fade-in-down">
             <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-sm border border-transparent dark:border-gray-700">

@@ -12,11 +12,13 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
+    // Initialize theme from localStorage with fallback to light mode
     const [theme, setTheme] = useState<Theme>(() => {
         const storedTheme = localStorage.getItem('theme');
         return (storedTheme === 'light' || storedTheme === 'dark') ? storedTheme : 'light';
     });
 
+    // Apply theme changes to DOM and persist to localStorage
     useEffect(() => {
         const root = window.document.documentElement;
 
