@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+
+    @apply bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-200;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  *:not([class*="no-transition"]) {
+    @apply transition-colors duration-200;
+  }
+}
