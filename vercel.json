@@ -11,14 +11,8 @@
     ],
     "rewrites": [
         {
-            "source": "/((?!api/|_next/|favicon.ico|.*\\..*).*)",
+            "source": "/((?!.*\\..*).*)",
             "destination": "/index.html"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/api/(.*)",
-            "dest": "/api/$1"
         }
     ]
 }
