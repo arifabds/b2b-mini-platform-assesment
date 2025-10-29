@@ -2,6 +2,7 @@ import type { GoldType, IndexConfig } from '../types/metal';
 
 // Standard gold weight variants
 export const GOLD_TYPES: GoldType[] = [
+    { type: 'raw', displayName: 'PAXG', weight: 1 }, 
     { type: 'gram', displayName: 'Gram', weight: 1 },
     { type: 'quarter', displayName: 'Quarter', weight: 1.75 },
     { type: 'half', displayName: 'Half', weight: 3.5 },
