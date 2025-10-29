@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
 import { LoaderCircle, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
 import { useMetalPrices } from "../../../lib/hooks/useMetalPrices";
-import type { MetalPrice } from "../../../lib/hooks/useMetalPrices";
 
 const SYMBOLS_TO_TRACK = ["XAUTUSDT", "XAGUSDT"];
 
