@@ -45,6 +45,6 @@ export const INDICES_CONFIG: IndexConfig[] = [
 export const TROY_OUNCE_TO_GRAM = 31.1034768;
 
 // Binance WebSocket configuration
-export const BINANCE_WS_BASE = 'wss://stream.binance.com:9443/stream?streams=';
+export const BINANCE_WS_BASE = 'wss://data-stream.binance.vision:443/ws';
 export const WS_RECONNECT_DELAY = 3000;
 export const WS_PING_INTERVAL = 30000;
