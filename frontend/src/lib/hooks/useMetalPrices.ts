@@ -32,17 +32,15 @@ export function useMetalPrices(symbols: string[]) {
         }
 
         const streamNames = symbols.map(s => `${s.toLowerCase()}@miniTicker`).join('/');
-        
+
         // Always use the mock WebSocket in all environments.
         ws.current = new MockWebSocket(`wss://mock.stream/${streamNames}`);
 
-        setConnectionStatus('connecting');
         let isMounted = true;
 
+        // 1. Attach event handlers to the mock instance first.
         ws.current.onopen = () => { if (isMounted) setConnectionStatus('connected'); };
         ws.current.onclose = () => { if (isMounted) setConnectionStatus('disconnected'); };
-        
-        // Correctly typed to match the MockWebSocket's event definitions.
         ws.current.onerror = (error: Error) => {
             console.error('[useMetalPrices] MockWebSocket error:', error);
             if (isMounted) setConnectionStatus('error');
@@ -67,13 +65,16 @@ export function useMetalPrices(symbols: string[]) {
                     dailyChangePercent: isFinite(dailyChangePercent) ? dailyChangePercent : 0,
                     isPositive: dailyChange >= 0,
                 };
-                
+
                 // Use functional update to prevent stale state issues.
                 setPrices(prevPrices => ({ ...prevPrices, [payload.s]: newPriceData }));
             } catch (e) { console.error("Error processing WebSocket message:", e); }
         };
 
-        // Cleanup: close connection when component unmounts or symbols change.
+        // 2. Explicitly initiate the connection after handlers are set.
+        ws.current.connect();
+
+        // Cleanup: close connection when the component unmounts.
         return () => {
             isMounted = false;
             ws.current?.close();
