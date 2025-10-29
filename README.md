@@ -82,6 +82,8 @@ Projeyi lokal makinenizde çalıştırmak için aşağıdaki adımları izleyin.
 
 Uygulama artık `http://localhost:5173` (veya terminalde belirtilen başka bir port) adresinde çalışıyor olacaktır.
 
+Mock verilerle giriş için: E-mail: admin@example.com, Şifre: password123
+
 ### **Kullanılabilir Script'ler**
 
 *   `npm run dev`: Geliştirme sunucusunu başlatır.
