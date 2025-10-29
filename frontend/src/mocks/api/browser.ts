@@ -1,6 +1,11 @@
-// Sets up and exports the MSW service worker for the browser.
-import { setupWorker } from 'msw/browser'
+import { setupWorker } from 'msw/browser';
+import { handlers } from './handlers';
 
-import { handlers } from './handlers'
+declare global {
+  interface Window {
+    __MSW_DISABLE_WEBSOCKET_MOCK?: boolean;
+  }
+}
+window.__MSW_DISABLE_WEBSOCKET_MOCK = true;
 
-export const worker = setupWorker(...handlers)
+export const worker = setupWorker(...handlers);
