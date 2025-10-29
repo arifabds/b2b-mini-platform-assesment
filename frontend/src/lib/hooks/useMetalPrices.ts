@@ -40,23 +40,23 @@ export function useMetalPrices(symbols: string[]) {
             const uniquePairs = [...new Set(INDICES_CONFIG.map(c => c.binancePair.toLowerCase()))];
             const hasAllData = uniquePairs.every(pair => priceDataRef.current.has(pair));
             if (!hasAllData) return;
-        
+
             const newIndices = symbolsRef.current
                 .map(symbol => {
                     const config = INDICES_CONFIG.find(c => c.symbol === symbol);
                     if (!config) return null;
-        
+
                     const tickerData = priceDataRef.current.get(config.binancePair.toLowerCase());
                     if (!tickerData) return null;
-        
+
                     const troyOuncePrice = parseFloat(tickerData.c);
                     const pricePerGram = troyOuncePrice / TROY_OUNCE_TO_GRAM;
                     const finalPricePerGram = config.conversionRate
                         ? pricePerGram * config.conversionRate
                         : pricePerGram;
-        
+
                     const dailyChangePercent = parseFloat(tickerData.P);
-        
+
                     return {
                         symbol: config.symbol,
                         name: config.name,
@@ -64,11 +64,11 @@ export function useMetalPrices(symbols: string[]) {
                         currencySymbol: config.currencySymbol,
                         details: GOLD_TYPES.map(goldType => {
                             const price = goldType.type === 'raw'
-                                ? troyOuncePrice
+                                ? troyOuncePrice * (config.conversionRate ?? 1)
                                 : finalPricePerGram * goldType.weight;
-        
+
                             const dailyChange = (price * dailyChangePercent) / 100;
-        
+
                             return {
                                 type: goldType.type,
                                 displayName: goldType.displayName,
@@ -82,7 +82,7 @@ export function useMetalPrices(symbols: string[]) {
                     };
                 })
                 .filter((index): index is MetalIndex => index !== null);
-        
+
             setIndices(newIndices);
         };
 
