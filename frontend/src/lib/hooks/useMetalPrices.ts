@@ -35,10 +35,10 @@ export function useMetalPrices(symbols: string[]) {
         console.log('[DEBUG] Initializing WebSocket connection...');
 
         const updateIndices = () => {
-            /*const uniquePairs = [...new Set(INDICES_CONFIG.map(c => c.binancePair))];
+            const uniquePairs = [...new Set(INDICES_CONFIG.map(c => c.binancePair.toLowerCase()))];
             const hasAllData = uniquePairs.every(pair => priceDataRef.current.has(pair));
 
-            if (!hasAllData) return;*/
+            if (!hasAllData) return;
 
             const newIndices = symbolsRef.current
                 .map(symbol => {
