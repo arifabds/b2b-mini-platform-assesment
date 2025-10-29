@@ -20,7 +20,7 @@ const SYMBOL_NAMES: Record<string, string> = {
 export function useMetalPrices(symbols: string[]) {
     const [prices, setPrices] = useState<Record<string, MetalPrice>>({});
     const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('connecting');
-    const ws = useRef<WebSocket | MockWebSocket | null>(null);
+    const ws = useRef<MockWebSocket | null>(null);
 
     // Key dependency to prevent infinite re-renders from the 'symbols' array.
     const symbolsKey = JSON.stringify(symbols);
@@ -32,26 +32,22 @@ export function useMetalPrices(symbols: string[]) {
         }
 
         const streamNames = symbols.map(s => `${s.toLowerCase()}@miniTicker`).join('/');
-
-        // Switch between mock and real WebSocket based on the environment.
-        if (import.meta.env.DEV) {
-            const mockUrl = `wss://mock.stream.binance.vision:9443/stream?streams=${streamNames}`;
-            ws.current = new MockWebSocket(mockUrl);
-        } else {
-            const realUrl = `wss://stream.binance.vision:9443/stream?streams=${streamNames}`;
-            ws.current = new WebSocket(realUrl);
-        }
+        
+        // Always use the mock WebSocket in all environments.
+        ws.current = new MockWebSocket(`wss://mock.stream/${streamNames}`);
 
         setConnectionStatus('connecting');
         let isMounted = true;
 
         ws.current.onopen = () => { if (isMounted) setConnectionStatus('connected'); };
         ws.current.onclose = () => { if (isMounted) setConnectionStatus('disconnected'); };
-        ws.current.onerror = (error: Event) => {
-            console.error('[useMetalPrices] WebSocket error:', error);
+        
+        // Correctly typed to match the MockWebSocket's event definitions.
+        ws.current.onerror = (error: Error) => {
+            console.error('[useMetalPrices] MockWebSocket error:', error);
             if (isMounted) setConnectionStatus('error');
         };
-        ws.current.onmessage = (event: MessageEvent) => {
+        ws.current.onmessage = (event: { data: string }) => {
             if (!isMounted) return;
             try {
                 const message = JSON.parse(event.data);
@@ -71,7 +67,7 @@ export function useMetalPrices(symbols: string[]) {
                     dailyChangePercent: isFinite(dailyChangePercent) ? dailyChangePercent : 0,
                     isPositive: dailyChange >= 0,
                 };
-
+                
                 // Use functional update to prevent stale state issues.
                 setPrices(prevPrices => ({ ...prevPrices, [payload.s]: newPriceData }));
             } catch (e) { console.error("Error processing WebSocket message:", e); }
@@ -85,7 +81,7 @@ export function useMetalPrices(symbols: string[]) {
 
     }, [symbolsKey]);
 
-    // Memorize the derived array to ensure a stable reference for consumers.
+    // Memoize the derived array to ensure a stable reference for consumers.
     const memoizedPrices = useMemo(() => {
         return Object.values(prices).sort((a, b) => a.symbol.localeCompare(b.symbol));
     }, [prices]);
