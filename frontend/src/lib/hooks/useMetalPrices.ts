@@ -5,7 +5,8 @@ import {
     TROY_OUNCE_TO_GRAM,
     GOLD_TYPES,
     WS_RECONNECT_DELAY,
-    WS_PING_INTERVAL
+    WS_PING_INTERVAL,
+    BINANCE_WS_BASE
 } from '../../constants/metalPrices';
 
 // Track if we've already initialized to prevent double mounting in strict mode
@@ -93,9 +94,9 @@ export function useMetalPrices(symbols: string[]) {
 
             const uniquePairs = [...new Set(INDICES_CONFIG.map(c => c.binancePair))];
             const streams = uniquePairs.map(pair => `${pair}@ticker`).join('/');
-            const wsUrl = `wss://data-stream.binance.vision:443/ws/${streams}`;
+            const wsUrl = `${BINANCE_WS_BASE}${streams}`;
 
-            console.log('[DEBUG] Connecting to:', wsUrl);
+            console.log('[DEBUG] Connecting:', wsUrl);
             setConnectionStatus('connecting');
 
             try {
