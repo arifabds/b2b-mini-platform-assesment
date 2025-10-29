@@ -121,7 +121,7 @@ export function useMetalPrices(symbols: string[]) {
 
                         if (message.stream && message.data) {
                             const ticker: Binance24hrTicker = message.data;
-                            const pair = message.stream.split('@')[0];
+                            const pair = message.stream.split('@')[0].toUpperCase();
                             console.log('[DEBUG] Price update:', pair, ticker.c);
                             priceDataRef.current.set(pair, ticker);
                             updateIndices();
