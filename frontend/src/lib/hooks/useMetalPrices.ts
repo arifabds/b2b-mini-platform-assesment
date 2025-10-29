@@ -117,17 +117,16 @@ export function useMetalPrices(symbols: string[]) {
 
                 ws.onmessage = (event) => {
                     try {
-                        const ticker: Binance24hrTicker = JSON.parse(event.data);
-                        
+                        const raw = JSON.parse(event.data);
+                        const ticker = raw.data ? raw.data : raw; // Combined vs direct
+
                         if (ticker.e === '24hrTicker' && ticker.s) {
-                            const pair = ticker.s; 
-                            
+                            const pair = ticker.s;
                             priceDataRef.current.set(pair, ticker);
-                            
                             updateIndices();
                         }
-                    } catch (error) { 
-                        console.error('[useMetalPrices] Critical Parse Error:', error, 'Raw Data:', event.data); 
+                    } catch (error) {
+                        console.error('[useMetalPrices] Critical Parse Error:', error, 'Raw Data:', event.data);
                     }
                 };
 
