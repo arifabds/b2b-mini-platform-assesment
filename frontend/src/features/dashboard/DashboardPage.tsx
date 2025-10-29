@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Package, ShoppingCart, LoaderCircle, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../../lib/contexts/AuthContext';
 import type { Order } from '../../types';
-import { Package, ShoppingCart, LoaderCircle, AlertTriangle } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import MetalPricesWidget from './components/MetalPricesWidget'; 
 
-// Interface defining dashboard summary data structure (unchanged).
 interface SummaryData {
     totalProducts: number;
     totalOrders: number;
@@ -18,18 +17,18 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    // This useEffect fetches static summary data (Total Products/Orders) and remains unchanged.
+    // Fetch static summary data once when the component mounts.
     useEffect(() => {
         const fetchSummaryData = async () => {
             try {
                 const response = await fetch('/api/summary');
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error('Failed to load summary data');
                 }
                 const result: SummaryData = await response.json();
                 setData(result);
             } catch (err) {
-                setError('Failed to fetch dashboard data. Please try again later.');
+                setError((err as Error).message);
             } finally {
                 setLoading(false);
             }
@@ -38,7 +37,7 @@ export default function DashboardPage() {
         fetchSummaryData();
     }, []);
 
-    // Renders a loading spinner while the initial summary data is being fetched.
+    // Render a full-page loader while initial data is fetching.
     if (loading) {
         return (
             <div className="flex items-center justify-center h-full">
@@ -47,7 +46,7 @@ export default function DashboardPage() {
         );
     }
 
-    // Renders an error message if the initial summary data fetch fails.
+    // Render a clear error message if the fetch fails.
     if (error) {
         return (
             <div className="bg-red-100 dark:bg-red-500/20 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 rounded-md" role="alert">
@@ -62,10 +61,9 @@ export default function DashboardPage() {
         );
     }
 
-    // The main dashboard layout with all components integrated.
     return (
         <div className="space-y-8 md:space-y-10">
-            {/* Block 1: Welcome message and summary cards. */}
+            {/* Block 1: Welcome message and summary cards */}
             <div className="animate-fade-in-down space-y-6">
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">
                     Welcome, {user?.firstName}!
@@ -76,7 +74,7 @@ export default function DashboardPage() {
                         <div className="flex items-start justify-between">
                             <div>
                                 <h2 className="text-base font-semibold text-gray-600 dark:text-gray-400">Total Products</h2>
-                                <p className="text-4xl font-bold text-gray-900 dark:text-white mt-2">{data?.totalProducts}</p>
+                                <p className="text-4xl font-bold text-gray-900 dark:text-white mt-2">{data?.totalProducts ?? 0}</p>
                             </div>
                             <div className="bg-blue-100 dark:bg-blue-500/20 p-3 rounded-full">
                                 <Package className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -87,7 +85,7 @@ export default function DashboardPage() {
                         <div className="flex items-start justify-between">
                             <div>
                                 <h2 className="text-base font-semibold text-gray-600 dark:text-gray-400">Total Orders</h2>
-                                <p className="text-4xl font-bold text-gray-900 dark:text-white mt-2">{data?.totalOrders}</p>
+                                <p className="text-4xl font-bold text-gray-900 dark:text-white mt-2">{data?.totalOrders ?? 0}</p>
                             </div>
                             <div className="bg-green-100 dark:bg-green-500/20 p-3 rounded-full">
                                 <ShoppingCart className="h-6 w-6 text-green-600 dark:text-green-400" />
@@ -97,10 +95,10 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            {/* Block 2: The newly integrated real-time Metal Prices Widget. */}
+            {/* Block 2: Self-contained real-time Metal Prices Widget */}
             <MetalPricesWidget />
 
-            {/* Block 3: Recent Orders table. */}
+            {/* Block 3: Recent Orders table */}
             <div className="animate-fade-in-up">
                 <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Recent Orders</h2>
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-transparent dark:border-gray-700 overflow-hidden">
@@ -132,8 +130,7 @@ export default function DashboardPage() {
                                                     Shipped: 'bg-blue-100 dark:bg-blue-500/20 text-blue-800 dark:text-blue-300',
                                                     Pending: 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-300',
                                                     Cancelled: 'bg-red-100 dark:bg-red-500/20 text-red-800 dark:text-red-300',
-                                                }[order.status]
-                                                    }`}>
+                                                }[order.status]}`}>
                                                     {order.status}
                                                 </span>
                                             </td>

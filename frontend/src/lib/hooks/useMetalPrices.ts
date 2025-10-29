@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { MockWebSocket } from '../../mocks/MockWebSocket';
 
 export interface MetalPrice {
     symbol: string;
@@ -9,75 +10,88 @@ export interface MetalPrice {
     isPositive: boolean;
 }
 
-export type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error";
+export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'error';
 
 const SYMBOL_NAMES: Record<string, string> = {
-    XAUTUSDT: "Gold (XAU/USDT)",
-    XAGUSDT: "Silver (XAG/USDT)",
+    'XAUTUSDT': 'Gold (XAU/USDT)',
+    'XAGUSDT': 'Silver (XAG/USDT)',
 };
-
-const POLL_INTERVAL = 2000;
 
 export function useMetalPrices(symbols: string[]) {
     const [prices, setPrices] = useState<Record<string, MetalPrice>>({});
-    const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("connecting");
-    const prevPricesRef = useRef<Record<string, number>>({});
+    const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('connecting');
+    const ws = useRef<WebSocket | MockWebSocket | null>(null);
 
-    const fetchPrices = async () => {
+    // Key dependency to prevent infinite re-renders from the 'symbols' array.
+    const symbolsKey = JSON.stringify(symbols);
+
+    useEffect(() => {
         if (!symbols || symbols.length === 0) {
-            setConnectionStatus("disconnected");
+            setConnectionStatus('disconnected');
             return;
         }
 
-        try {
-            setConnectionStatus("connecting");
+        const streamNames = symbols.map(s => `${s.toLowerCase()}@miniTicker`).join('/');
 
-            const responses = await Promise.all(
-                symbols.map((symbol) =>
-                    fetch(`/api/prices/${symbol}`).then(res => res.json())
-                )
-            );
+        // Switch between mock and real WebSocket based on the environment.
+        if (import.meta.env.DEV) {
+            const mockUrl = `wss://mock.stream.binance.vision:9443/stream?streams=${streamNames}`;
+            ws.current = new MockWebSocket(mockUrl);
+        } else {
+            const realUrl = `wss://stream.binance.vision:9443/stream?streams=${streamNames}`;
+            ws.current = new WebSocket(realUrl);
+        }
 
-            const newPrices: Record<string, MetalPrice> = {};
+        setConnectionStatus('connecting');
+        let isMounted = true;
 
-            responses.forEach((data) => {
-                const symbol = data.symbol;
-                const currentPrice = parseFloat(data.lastPrice);
-                const openPrice = parseFloat(data.openPrice);
+        ws.current.onopen = () => { if (isMounted) setConnectionStatus('connected'); };
+        ws.current.onclose = () => { if (isMounted) setConnectionStatus('disconnected'); };
+        ws.current.onerror = (error: Event) => {
+            console.error('[useMetalPrices] WebSocket error:', error);
+            if (isMounted) setConnectionStatus('error');
+        };
+        ws.current.onmessage = (event: MessageEvent) => {
+            if (!isMounted) return;
+            try {
+                const message = JSON.parse(event.data);
+                const payload = message.data;
+                if (!payload || !payload.s) return;
+
+                const currentPrice = parseFloat(payload.c);
+                const openPrice = parseFloat(payload.o);
                 const dailyChange = currentPrice - openPrice;
-                const dailyChangePercent = (dailyChange / openPrice) * 100;
+                const dailyChangePercent = (openPrice !== 0) ? (dailyChange / openPrice) * 100 : 0;
 
-                newPrices[symbol] = {
-                    symbol,
-                    name: SYMBOL_NAMES[symbol] || symbol,
+                const newPriceData: MetalPrice = {
+                    symbol: payload.s,
+                    name: SYMBOL_NAMES[payload.s] || payload.s,
                     price: currentPrice,
-                    dailyChange,
+                    dailyChange: dailyChange,
                     dailyChangePercent: isFinite(dailyChangePercent) ? dailyChangePercent : 0,
                     isPositive: dailyChange >= 0,
                 };
-            });
 
-            prevPricesRef.current = Object.fromEntries(
-                Object.entries(newPrices).map(([symbol, price]) => [symbol, prices[symbol]?.price ?? price.price])
-            );
+                // Use functional update to prevent stale state issues.
+                setPrices(prevPrices => ({ ...prevPrices, [payload.s]: newPriceData }));
+            } catch (e) { console.error("Error processing WebSocket message:", e); }
+        };
 
-            setPrices(newPrices);
-            setConnectionStatus("connected");
-        } catch (e) {
-            console.error("❌ Error fetching prices", e);
-            setConnectionStatus("error");
-        }
-    };
+        // Cleanup: close connection when component unmounts or symbols change.
+        return () => {
+            isMounted = false;
+            ws.current?.close();
+        };
 
-    useEffect(() => {
-        fetchPrices();
-        const interval = setInterval(fetchPrices, POLL_INTERVAL);
-        return () => clearInterval(interval);
-    }, [symbols]);
+    }, [symbolsKey]);
+
+    // Memorize the derived array to ensure a stable reference for consumers.
+    const memoizedPrices = useMemo(() => {
+        return Object.values(prices).sort((a, b) => a.symbol.localeCompare(b.symbol));
+    }, [prices]);
 
     return {
-        prices: Object.values(prices).sort((a, b) => a.symbol.localeCompare(b.symbol)),
-        prevPrices: prevPricesRef.current,
+        prices: memoizedPrices,
         connectionStatus,
     };
 }

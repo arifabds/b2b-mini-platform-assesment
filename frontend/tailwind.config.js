@@ -35,12 +35,17 @@ export default {
           '100%': {
             opacity: '1',
           },
-        }
+        },
+        'flash': {
+          '0%, 100%': { backgroundColor: 'transparent' },
+          '25%': { backgroundColor: 'var(--flash-color)' },
+        },
       },
       animation: {
         'fade-in-down': 'fade-in-down 0.5s ease-out',
         'fade-in-up': 'fade-in-up 0.5s ease-out',
         'fade-in': 'fade-in 0.5s ease-out',
+        'flash': 'flash 1.5s ease-out',
       }
     },
   },
