@@ -37,5 +37,20 @@ export interface IndexConfig {
     name: string;
     currency: string;
     currencySymbol: string;
-    basePrice: number;
+    binancePair: string;
+    conversionRate?: number;
+}
+
+// Binance 24hr ticker data structure
+export interface Binance24hrTicker {
+    e: string;
+    E: number;
+    s: string;
+    c: string; // Current price
+    o: string; // Open price
+    h: string; // High price
+    l: string; // Low price
+    p: string; // Price change
+    P: string; // Price change percent
+    v: string; // Volume
 }

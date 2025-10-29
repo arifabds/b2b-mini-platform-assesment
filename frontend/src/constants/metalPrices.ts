@@ -8,37 +8,43 @@ export const GOLD_TYPES: GoldType[] = [
     { type: 'full', displayName: 'Full', weight: 7 }
 ];
 
-// Major gold indices configuration
+// Binance trading pairs for gold
+export const BINANCE_PAIRS = {
+    PAXGUSDT: 'paxgusdt', // 1 PAXG = 1 troy ounce gold
+    PAXGBUSD: 'paxgbusd'
+};
+
+// Major gold indices configuration with troy ounce base
 export const INDICES_CONFIG: IndexConfig[] = [
     {
         symbol: 'XAUUSD',
         name: 'Gold vs. US Dollar',
         currency: 'USD',
         currencySymbol: '$',
-        basePrice: 2330
+        binancePair: BINANCE_PAIRS.PAXGUSDT
     },
     {
         symbol: 'XAUEUR',
         name: 'Gold vs. Euro',
         currency: 'EUR',
         currencySymbol: '€',
-        basePrice: 2165
+        binancePair: BINANCE_PAIRS.PAXGUSDT,
+        conversionRate: 0.86 // EUR/USD approximate rate
     },
     {
         symbol: 'XAUTRY',
         name: 'Gold vs. Turkish Lira',
         currency: 'TRY',
         currencySymbol: '₺',
-        basePrice: 180000
+        binancePair: BINANCE_PAIRS.PAXGUSDT,
+        conversionRate: 41.94 // TRY/USD approximate rate
     }
 ];
 
 // Troy ounce to gram conversion
 export const TROY_OUNCE_TO_GRAM = 31.1034768;
 
-// WebSocket update interval
-export const WS_UPDATE_INTERVAL = 800;
-
-// Price fluctuation limits
-export const MAX_PRICE_FLUCTUATION = 0.0005;
-export const MAX_INITIAL_VARIANCE = 0.015;
+// Binance WebSocket configuration
+export const BINANCE_WS_BASE = 'wss://stream.binance.com:443';
+export const WS_RECONNECT_DELAY = 3000;
+export const WS_PING_INTERVAL = 30000;

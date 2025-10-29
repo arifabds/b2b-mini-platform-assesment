@@ -6,12 +6,19 @@ import type { PriceEffect } from '../../../types/metal';
 const SYMBOLS_TO_TRACK = ['XAUUSD', 'XAUEUR', 'XAUTRY'];
 
 export default function MetalPricesWidget() {
+  console.log('[MetalPricesWidget] Component rendering...');
+
   const { indices, connectionStatus } = useMetalPrices(SYMBOLS_TO_TRACK);
+
+  console.log('[MetalPricesWidget] Hook returned:', { 
+    indicesCount: indices.length, 
+    connectionStatus 
+  });
+  
   const [priceEffects, setPriceEffects] = useState<Record<string, PriceEffect>>({});
   const [expandedIndex, setExpandedIndex] = useState<string | null>(null);
   const prevPricesRef = useRef<Record<string, number>>({});
 
-  // Track price changes for visual effects
   useEffect(() => {
     if (indices.length === 0) return;
 
@@ -34,7 +41,6 @@ export default function MetalPricesWidget() {
 
     setPriceEffects(newEffects);
 
-    // Clear effects after animation
     const timer = setTimeout(() => {
       setPriceEffects({});
     }, 1000);
@@ -59,6 +65,16 @@ export default function MetalPricesWidget() {
     }
   };
 
+  const getStatusText = () => {
+    switch (connectionStatus) {
+      case 'connected': return 'Live';
+      case 'connecting': return 'Connecting...';
+      case 'disconnected': return 'Disconnected';
+      case 'error': return 'Error';
+      default: return 'Unknown';
+    }
+  };
+
   const toggleExpand = (symbol: string) => {
     setExpandedIndex(expandedIndex === symbol ? null : symbol);
   };
@@ -71,10 +87,7 @@ export default function MetalPricesWidget() {
         </h2>
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-500 dark:text-gray-400 hidden sm:inline">
-            {connectionStatus === 'connected' && 'Live'}
-            {connectionStatus === 'connecting' && 'Connecting...'}
-            {connectionStatus === 'disconnected' && 'Disconnected'}
-            {connectionStatus === 'error' && 'Error'}
+            {getStatusText()}
           </span>
           <div className={`w-2 h-2 rounded-full ${getStatusColor()}`} />
         </div>
@@ -87,9 +100,8 @@ export default function MetalPricesWidget() {
           return (
             <div
               key={index.symbol}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-transparent dark:border-gray-700 overflow-hidden"
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-transparent dark:border-gray-700 overflow-hidden transition-all duration-200 hover:shadow-xl"
             >
-              {/* Expandable header */}
               <button
                 onClick={() => toggleExpand(index.symbol)}
                 className="w-full px-4 sm:px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-750 border-b border-gray-200 dark:border-gray-700 hover:from-gray-100 hover:to-gray-150 dark:hover:from-gray-750 dark:hover:to-gray-700 transition-colors"
@@ -111,19 +123,17 @@ export default function MetalPricesWidget() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400 hidden sm:inline">
                       {isExpanded ? 'Collapse' : 'Expand'}
                     </span>
                     <RefreshCw
                       size={16}
-                      className={`text-gray-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''
-                        }`}
+                      className={`text-gray-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
                     />
                   </div>
                 </div>
               </button>
 
-              {/* Expandable details */}
               <div
                 className={`transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                   } overflow-hidden`}
@@ -145,7 +155,6 @@ export default function MetalPricesWidget() {
                         className={`px-4 sm:px-6 py-3 transition-colors duration-500 ${effectClass}`}
                       >
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 items-center">
-                          {/* Gold type and weight */}
                           <div>
                             <p className="font-medium text-gray-800 dark:text-gray-200 text-sm sm:text-base">
                               {detail.displayName}
@@ -155,14 +164,12 @@ export default function MetalPricesWidget() {
                             </p>
                           </div>
 
-                          {/* Current price */}
                           <div className="text-right sm:text-center">
                             <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
                               {formatPrice(detail.price, index.currencySymbol)}
                             </p>
                           </div>
 
-                          {/* 24h change */}
                           <div className="col-span-2 sm:col-span-1 flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-0 border-gray-100 dark:border-gray-700">
                             <span className="text-xs text-gray-500 dark:text-gray-400 sm:hidden">
                               24h Change
@@ -194,11 +201,17 @@ export default function MetalPricesWidget() {
         })}
       </div>
 
-      {/* Error state */}
       {connectionStatus === 'error' && (
         <div className="mt-4 bg-red-50 dark:bg-red-500/10 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 rounded-md text-sm">
           <p className="font-medium">Connection Error</p>
-          <p className="text-xs mt-1">Unable to establish WebSocket connection. Retrying...</p>
+          <p className="text-xs mt-1">Unable to connect to Binance WebSocket. Retrying...</p>
+        </div>
+      )}
+
+      {indices.length === 0 && connectionStatus === 'connected' && (
+        <div className="mt-4 bg-yellow-50 dark:bg-yellow-500/10 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-300 p-4 rounded-md text-sm">
+          <p className="font-medium">Waiting for data...</p>
+          <p className="text-xs mt-1">Receiving live gold prices from Binance.</p>
         </div>
       )}
     </div>
