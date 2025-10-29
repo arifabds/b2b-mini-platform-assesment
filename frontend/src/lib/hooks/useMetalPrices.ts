@@ -35,10 +35,10 @@ export function useMetalPrices(symbols: string[]) {
         console.log('[DEBUG] Initializing WebSocket connection...');
 
         const updateIndices = () => {
-            const uniquePairs = [...new Set(INDICES_CONFIG.map(c => c.binancePair))];
+            /*const uniquePairs = [...new Set(INDICES_CONFIG.map(c => c.binancePair))];
             const hasAllData = uniquePairs.every(pair => priceDataRef.current.has(pair));
 
-            if (!hasAllData) return;
+            if (!hasAllData) return;*/
 
             const newIndices = symbolsRef.current
                 .map(symbol => {
@@ -92,7 +92,6 @@ export function useMetalPrices(symbols: string[]) {
             }
 
             const uniquePairs = [...new Set(INDICES_CONFIG.map(c => c.binancePair))];
-            // Use Binance Vision endpoint (works from Turkey)
             const streams = uniquePairs.map(pair => `${pair}@ticker`).join('/');
             const wsUrl = `wss://data-stream.binance.vision:443/ws/${streams}`;
 
